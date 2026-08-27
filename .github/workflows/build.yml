@@ -1,4 +1,4 @@
-name: Build Cython for Android
+name: Build Cython
 
 on:
   push:
@@ -8,32 +8,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.14'
+        python-version: '3.11'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install cython setuptools
 
-    - name: Compile for ARM64
+    - name: Compile
       run: |
-        python -c "
-        from setuptools import setup
-        from Cython.Build import cythonize
-        setup(
-            ext_modules = cythonize('wifihack.py'),
-            script_args=['build_ext', '--inplace']
-        )
-        "
+        python -c "from setuptools import setup; from Cython.Build import cythonize; setup(ext_modules=cythonize('wifihack.py'))" build_ext --inplace
 
-    - name: Upload Artifacts
+    - name: Upload SO files
       uses: actions/upload-artifact@v4
       with:
-        name: aarch64-so-file
+        name: cython-so
         path: *.so
