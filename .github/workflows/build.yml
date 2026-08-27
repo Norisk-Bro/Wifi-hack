@@ -23,12 +23,9 @@ jobs:
 
     - name: Compile for ARM64
       run: |
-        # সরাসরি পাইথন স্কিপ্ট দিয়ে এআরএম প্ল্যাটফর্ম টার্গেট করে বিল্ড করা
         python -c "
         from setuptools import setup
         from Cython.Build import cythonize
-        import sys
-        # ফোর্সিং প্ল্যাটফর্ম টার্গেট
         setup(
             ext_modules = cythonize('wifihack.py'),
             script_args=['build_ext', '--inplace']
