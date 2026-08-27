@@ -1,4 +1,4 @@
-name: Build Cython Extension for Android/ARM
+name: Build Cython for Android
 
 on:
   push:
@@ -7,9 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Check out repository
+    - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Set up Python
@@ -22,22 +21,22 @@ jobs:
         python -m pip install --upgrade pip
         pip install cython setuptools
 
-    - name: Compile for ARM64 (Termux/Phone)
+    - name: Compile for ARM64
       run: |
-        # সরাসরি টার্মিনাল কমান্ডের মাধ্যমে এআরএম (ARM64) আর্কিটেকচারের জন্য সাইথন বিল্ড করা
-        cat << 'EOF' > build_arm.py
+        # সরাসরি পাইথন স্কিপ্ট দিয়ে এআরএম প্ল্যাটফর্ম টার্গেট করে বিল্ড করা
+        python -c "
         from setuptools import setup
         from Cython.Build import cythonize
+        import sys
+        # ফোর্সিং প্ল্যাটফর্ম টার্গেট
         setup(
-            ext_modules = cythonize(["wifihack.py"])
+            ext_modules = cythonize('wifihack.py'),
+            script_args=['build_ext', '--inplace']
         )
-        EOF
-        python build_arm.py build_ext --inplace
+        "
 
-    - name: Upload compiled files
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: compiled-so-files-arm
-        path: |
-          *.so
-          !setup.py
+        name: aarch64-so-file
+        path: *.so
